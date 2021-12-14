@@ -1,0 +1,85 @@
+﻿@page "/Settings"
+@using DataAccessLibrary
+@using DataAccessLibrary.Models
+@inject SiteService _db
+
+<h1>Sites</h1>
+<RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Add New Site" Click="@InsertRow" Disabled=@(siteToInsert != null) />
+<RadzenDataGrid @ref="sitesGrid" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" EditMode="DataGridEditMode.Single"
+                Data="@sites" TItem="Site" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
+    <Columns>
+        <RadzenDataGridColumn TItem="Site" Property="NAME" Title="NAME">
+            <EditTemplate Context="site">
+                <RadzenTextBox @bind-Value="site.NAME" Data="@sites" TextProperty="SiteName" ValueProperty="NAME" Style="width:100%; display: block;" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+
+
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    RadzenDataGrid<Site> sitesGrid;
+    IList<Site> sites;
+    Site siteToInsert;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        sites = await _db.GetSites();
+    }
+
+    async Task InsertRow()
+    {
+        siteToInsert = new Site();
+        await sitesGrid.InsertRow(siteToInsert);
+    }
+
+
+    void OnCreateRow(Site site)
+    {
+        _db.InsertSite(site);
+    }
+
+    async Task SaveRow(Site site)
+    {
+        if (site == siteToInsert)
+        {
+            siteToInsert = null;
+        }
+
+        await sitesGrid.UpdateRow(site);
+    }
+
+    async Task EditRow(Site site)
+    {
+        await sitesGrid.EditRow(site);
+    }
+
+    void OnUpdateRow(Site site)
+    {
+        if (site == siteToInsert)
+        {
+            siteToInsert = null;
+        }
+
+        _db.UpdateSite(site);
+
+    }
+
+    void CancelEdit(Site site)
+    {
+        if (site == siteToInsert)
+        {
+            siteToInsert = null;
+        }
+
+        sitesGrid.CancelEditRow(site);
+
+    }
+
+
+
+
+}

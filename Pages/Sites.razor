@@ -6,26 +6,39 @@
 <h1>Sites</h1>
 <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Add New Site" Click="@InsertRow" Disabled=@(siteToInsert != null) />
 <RadzenDataGrid @ref="sitesGrid" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" EditMode="DataGridEditMode.Single"
-                Data="@sites" TItem="SiteModel" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
+                Data="@sites" TItem="Site" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
     <Columns>
-        <RadzenDataGridColumn TItem="SiteModel" Property="NAME" Title="NAME">
+        <RadzenDataGridColumn TItem="Site" Property="NAME" Title="NAME">
             <EditTemplate Context="site">
                 <RadzenTextBox @bind-Value="site.NAME" Data="@sites" TextProperty="SiteName" ValueProperty="NAME" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="SiteModel" Property="address" Title="ADDRESS">
+
+        <RadzenDataGridColumn TItem="Site" Property="address" Title="ADDRESS">
             <EditTemplate Context="site">
             <RadzenTextBox @bind-Value="site.address" Data="@sites" TextProperty="SiteAddress" ValueProperty="Address" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn TItem="SiteModel" Property="city" Title="CITY">
+        <RadzenDataGridColumn TItem="Site" Property="city" Title="CITY">
             <EditTemplate Context="site">
                 <RadzenTextBox @bind-Value="site.city" Data="@sites" TextProperty="SiteCity" ValueProperty="City" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
+                
+        <RadzenDataGridColumn TItem="Site" Property="state" Title="STATE">
+            <EditTemplate Context="site">
+                <RadzenNumeric @bind-Value="site.state_key" Data="@sites" TextProperty="SiteState" ValueProperty="State" Style="width:100%; display: block;" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+                
+        <RadzenDataGridColumn TItem="Site" Property="state" Title="ZIP">
+            <EditTemplate Context="site">
+                <RadzenNumeric @bind-Value="site.zip" Data="@sites" TextProperty="SiteZip" ValueProperty="Zip" Style="width:100%; display: block;" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn TItem="SiteModel" Context="sampleBlazorModelsSampleOrder" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+        <RadzenDataGridColumn TItem="Site" Context="sampleBlazorModelsSampleOrder" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
             <Template Context="order">
                 <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(order))" @onclick:stopPropagation="true">
                 </RadzenButton>
@@ -42,9 +55,9 @@
 </RadzenDataGrid>
 
 @code {
-    RadzenDataGrid<SiteModel> sitesGrid;
-    IList<SiteModel> sites;
-    SiteModel siteToInsert;
+    RadzenDataGrid<Site> sitesGrid;
+    IList<Site> sites;
+    Site siteToInsert;
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,17 +68,17 @@
 
     async Task InsertRow()
     {
-        siteToInsert = new SiteModel();
+        siteToInsert = new Site();
         await sitesGrid.InsertRow(siteToInsert);
     }
 
 
-    void OnCreateRow(SiteModel site)
+    void OnCreateRow(Site site)
     {
         _db.InsertSite(site);
     }
 
-    async Task SaveRow(SiteModel site)
+    async Task SaveRow(Site site)
     {
         if (site == siteToInsert)
         {
@@ -75,12 +88,12 @@
         await sitesGrid.UpdateRow(site);
     }
 
-    async Task EditRow(SiteModel site)
+    async Task EditRow(Site site)
     {
         await sitesGrid.EditRow(site);
     }
 
-    void OnUpdateRow(SiteModel site)
+    void OnUpdateRow(Site site)
     {
         if (site == siteToInsert)
         {
@@ -91,7 +104,7 @@
 
     }
 
-    void CancelEdit(SiteModel site)
+    void CancelEdit(Site site)
     {
         if (site == siteToInsert)
         {
