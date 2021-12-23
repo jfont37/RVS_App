@@ -29,6 +29,8 @@ namespace RVS_App
             services.AddServerSideBlazor();
             services.AddTransient<SqlDataAccess>();
             services.AddTransient<SiteService>();
+            services.AddTransient<StateService>();
+            services.AddTransient<BuildingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

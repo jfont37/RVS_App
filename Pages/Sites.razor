@@ -1,14 +1,19 @@
-﻿@page "/Sites"
+﻿@page "/"
+@page "/Sites"
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
-@inject SiteService _db
+@inject NavigationManager NavigationManager
+@inject SiteService _siteService
+@inject StateService _stateService
+
+
 
 <h1>Sites</h1>
-<RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Add New Site" Click="@InsertRow" Disabled=@(siteToInsert != null) />
+<RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Site" Click="@InsertRow" Disabled=@(siteToInsert != null) />
 <RadzenDataGrid @ref="sitesGrid" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" EditMode="DataGridEditMode.Single"
                 Data="@sites" TItem="Site" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
     <Columns>
-        <RadzenDataGridColumn TItem="Site" Property="NAME" Title="NAME">
+        <RadzenDataGridColumn TItem="Site" Property="NAME" Title="NAME" SortProperty="NAME">
             <EditTemplate Context="site">
                 <RadzenTextBox @bind-Value="site.NAME" Data="@sites" TextProperty="SiteName" ValueProperty="NAME" Style="width:100%; display: block;" />
             </EditTemplate>
@@ -28,25 +33,27 @@
                 
         <RadzenDataGridColumn TItem="Site" Property="state" Title="STATE">
             <EditTemplate Context="site">
-                <RadzenNumeric @bind-Value="site.state_key" Data="@sites" TextProperty="SiteState" ValueProperty="State" Style="width:100%; display: block;" />
+                <RadzenDropDown @bind-Value="site.state_key" AllowClear="true" Class="w-100" AllowFiltering="true" Data=@states TextProperty="abbreviation" ValueProperty="site.state_key" />
             </EditTemplate>
         </RadzenDataGridColumn>
                 
-        <RadzenDataGridColumn TItem="Site" Property="state" Title="ZIP">
+        <RadzenDataGridColumn TItem="Site" Property="zip" Title="ZIP">
             <EditTemplate Context="site">
-                <RadzenNumeric @bind-Value="site.zip" Data="@sites" TextProperty="SiteZip" ValueProperty="Zip" Style="width:100%; display: block;" />
+                <RadzenTextBox  @bind-Value="site.zip" Data="@sites" TextProperty="SiteZip" ValueProperty="Zip" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn TItem="Site" Context="sampleBlazorModelsSampleOrder" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
-            <Template Context="order">
-                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(order))" @onclick:stopPropagation="true">
-                </RadzenButton>
+        <RadzenDataGridColumn TItem="Site" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="200px">
+            <Template Context="site">
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(site))" @onclick:stopPropagation="true"></RadzenButton>
+                @*<RadzenLink Icon="apartment" href="@($"buildings/{site.site_key}")"></RadzenLink>*@
+                <RadzenButton Icon="apartment" ButtonStyle="ButtonStyle.Light" Click="@(args => GoToBuildings(site.site_key))"></RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(site))"  @onclick:stopPropagation="true"></RadzenButton>           
             </Template>
-            <EditTemplate Context="order">
-                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(order))">
+            <EditTemplate Context="site">
+                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(site))">
                 </RadzenButton>
-                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(order))">
+                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(site))">
                 </RadzenButton>
             </EditTemplate>
         </RadzenDataGridColumn>
@@ -57,27 +64,33 @@
 @code {
     RadzenDataGrid<Site> sitesGrid;
     IList<Site> sites;
+    IList<State> states;
     Site siteToInsert;
+    [Parameter]
+    public int param { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
 
-        sites = await _db.GetSites();
+        sites = await _siteService.GetSites();
+        states = await _stateService.GetStates();
     }
 
+    //creates a new blank row in UI grid bound to new object of type Site; not sure if this fires the radzen rowcreate method which we have set to call the OnCreateRow method below
     async Task InsertRow()
     {
         siteToInsert = new Site();
         await sitesGrid.InsertRow(siteToInsert);
     }
 
-
+    //somehow this gets fired only when clicking save (checkmark symbol on ui) for a new row. not sure what actually calls this
     void OnCreateRow(Site site)
     {
-        _db.InsertSite(site);
+        _siteService.InsertSite(site);
     }
 
+    //fires when save (checkmark symbol on ui) is clicked but now idea how this gets to OnCreateRow as this only calls UpdateRow which calls updatesite
     async Task SaveRow(Site site)
     {
         if (site == siteToInsert)
@@ -100,7 +113,7 @@
             siteToInsert = null;
         }
 
-        _db.UpdateSite(site);
+        _siteService.UpdateSite(site);
 
     }
 
@@ -115,7 +128,39 @@
 
     }
 
+    async Task DeleteRow(Site site)
+    {
+        if (site == siteToInsert)
+        {
+            siteToInsert = null;
+        }
 
+        if (sites.Contains(site))
+        {
+            _siteService.DeleteSite(site); 
+
+            await sitesGrid.Reload();
+        }
+        else
+        {
+            sitesGrid.CancelEditRow(site);
+        }
+    }
+
+      void GoToBuildings(int site_key)
+  {
+
+    //NavigationManager.NavigateTo("https://ibm.com");
+    NavigationManager.NavigateTo("/Buildings/" + site_key);
+  }
+
+
+    //async Task GoToBuildings(Site site)
+    //{
+    //    var site_key = site.site_key;
+    //    GetBuildings(int site_key)
+
+    //}
 
 
 }

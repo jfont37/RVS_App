@@ -1,0 +1,142 @@
+﻿@page "/Rooms"
+@page "/Rooms/{room_key:int}"
+@using DataAccessLibrary
+@using DataAccessLibrary.Models
+@inject NavigationManager NavigationManager
+@inject RoomService _roomService
+@inject RoomTypeService _roomTypeService
+
+
+<h1> Rooms</h1>
+<RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Room" Click="@InsertRow" Disabled=@(roomToInsert != null) />
+<RadzenDataGrid @ref="roomsGrid" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" EditMode="DataGridEditMode.Single"
+                Data="@rooms" TItem="Room" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
+    <Columns>
+        <RadzenDataGridColumn TItem="Room" Property="Room_Number" Title="Number" SortProperty="Number">
+            <EditTemplate Context="room">
+                <RadzenTextBox @bind-Value="room.room_number" Data="@rooms" TextProperty="room_number" ValueProperty="room_number" Style="width:100%; display: block;" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+                
+        <RadzenDataGridColumn TItem="Room" Property="room_name" Title="Name" SortProperty="Name">
+            <EditTemplate Context="room">
+                <RadzenTextBox @bind-Value="room.room_name" Data="@rooms" TextProperty="room_name" ValueProperty="room_name" Style="width:100%; display: block;" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+
+
+
+
+                
+        <RadzenDataGridColumn TItem="Room" Property="roomType" Title="Room Type">
+            <EditTemplate Context="room">
+                <RadzenDropDown @bind-Value="room.room_type_key" AllowClear="true" Class="w-100" AllowFiltering="true" Data=@roomTypes TextProperty="NAME" ValueProperty="room.room_type_key" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+
+
+        <RadzenDataGridColumn TItem="Room" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+            <Template Context="room">
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(room))" @onclick:stopPropagation="true"></RadzenButton>
+                <RadzenLink Path="Rooms" Text="Go to Rooms page" />                 
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(room))"  @onclick:stopPropagation="true"></RadzenButton>
+            </Template>
+            <EditTemplate Context="room">
+                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(room))">
+                </RadzenButton>
+                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(room))">
+                </RadzenButton>
+            </EditTemplate>
+        </RadzenDataGridColumn>
+
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    RadzenDataGrid<Room> roomsGrid;
+    IList<Room> rooms;        
+    IList<RoomType> roomTypes;
+    Room roomToInsert;
+    [Parameter]
+    public int building_key { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        rooms = await _roomService.GetBuildingRooms(building_key);
+    }
+
+    //creates a new blank row in UI grid bound to new object of type room; not sure if this fires the radzen rowcreate method which we have set to call the OnCreateRow method below
+    async Task InsertRow()
+    {
+        roomToInsert = new Room();
+
+        await roomsGrid.InsertRow(roomToInsert);
+    }
+
+    //somehow this gets fired only when clicking save (checkmark symbol on ui) for a new row. not sure what actually calls this
+    void OnCreateRow(Room room)
+    {
+        room.building_key = building_key;
+        _roomService.InsertRoom(room);
+    }
+
+    //fires when save (checkmark symbol on ui) is clicked but now idea how this gets to OnCreateRow as this only calls UpdateRow which calls updateroom
+    async Task SaveRow(Room room)
+    {
+        if (room == roomToInsert)
+        {
+            roomToInsert = null;
+        }
+
+        await roomsGrid.UpdateRow(room);
+    }
+
+    async Task EditRow(Room room)
+    {
+        await roomsGrid.EditRow(room);
+    }
+
+    void OnUpdateRow(Room room)
+    {
+        if (room == roomToInsert)
+        {
+            roomToInsert = null;
+        }
+
+        _roomService.UpdateRoom(room);
+
+    }
+
+    void CancelEdit(Room room)
+    {
+        if (room == roomToInsert)
+        {
+            roomToInsert = null;
+        }
+
+        roomsGrid.CancelEditRow(room);
+
+    }
+
+     async Task DeleteRow(Room room)
+    {
+        if (room == roomToInsert)
+        {
+            roomToInsert = null;
+        }
+
+        if (rooms.Contains(room))
+        {
+           _roomService.DeleteRoom(room); 
+
+            await roomsGrid.Reload();
+        }
+        else
+        {
+            roomsGrid.CancelEditRow(room);
+        }
+    }
+
+
+
+}
