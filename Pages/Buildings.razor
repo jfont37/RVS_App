@@ -3,12 +3,12 @@
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
 @inject NavigationManager NavigationManager
-@inject BuildingService _buildingService
 @inject SiteService _siteService
+@inject BuildingService _buildingService
 @inject StateService _stateService
 
 
-<h1> Buildings</h1>
+<h1>@site_name Buildings</h1>
 <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Building" Click="@InsertRow" Disabled=@(buildingToInsert != null) />
 <RadzenDataGrid @ref="buildingsGrid" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" EditMode="DataGridEditMode.Single"
                 Data="@buildings" TItem="Building" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
@@ -43,10 +43,10 @@
             </EditTemplate>
         </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn TItem="Building" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+        <RadzenDataGridColumn TItem="Building" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="200px">
             <Template Context="building">
                 <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(building))" @onclick:stopPropagation="true"></RadzenButton>
-                <RadzenButton Icon="apartment" ButtonStyle="ButtonStyle.Light" Click="@(args => GoToRooms(building.building_key))"></RadzenButton>
+                <RadzenButton Icon="meeting_room" ButtonStyle="ButtonStyle.Light" Click="@(args => GoToRooms(building.building_key))"></RadzenButton>
                  <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(building))"  @onclick:stopPropagation="true"></RadzenButton>
             </Template>
             <EditTemplate Context="building">
@@ -63,16 +63,17 @@
 @code {
     RadzenDataGrid<Building> buildingsGrid;
     IList<Building> buildings;
-    IList<Site> sites;
     IList<State> states;
+    string site_name;
     Building buildingToInsert;
     [Parameter]
     public int site_key { get; set; }
 
     protected override async Task OnInitializedAsync()
-    {
+    {                
+        base.OnInitialized();
         buildings = await _buildingService.GetSiteBuildings(site_key);
-        sites = await _siteService.GetSites();
+        site_name = buildings.FirstOrDefault().site_name;
         states = await _stateService.GetStates();
     }
 
@@ -148,12 +149,8 @@
         }
     }
      
-    void GoToRooms(int site_key)  
+    void GoToRooms(int building_key)  
      {    
          NavigationManager.NavigateTo("/Rooms/" + building_key);  
      }
-
-
-
-
 }

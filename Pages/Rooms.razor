@@ -1,5 +1,5 @@
 ﻿@page "/Rooms"
-@page "/Rooms/{room_key:int}"
+@page "/Rooms/{building_key:int}"
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
 @inject NavigationManager NavigationManager
@@ -7,38 +7,50 @@
 @inject RoomTypeService _roomTypeService
 
 
-<h1> Rooms</h1>
+<h1>@site_name @building_name Rooms</h1>
 <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Room" Click="@InsertRow" Disabled=@(roomToInsert != null) />
 <RadzenDataGrid @ref="roomsGrid" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" EditMode="DataGridEditMode.Single"
                 Data="@rooms" TItem="Room" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
     <Columns>
-        <RadzenDataGridColumn TItem="Room" Property="Room_Number" Title="Number" SortProperty="Number">
+        <RadzenDataGridColumn TItem="Room" Property="room_number" Title="Number" SortProperty="Number">
             <EditTemplate Context="room">
                 <RadzenTextBox @bind-Value="room.room_number" Data="@rooms" TextProperty="room_number" ValueProperty="room_number" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
-                
+
         <RadzenDataGridColumn TItem="Room" Property="room_name" Title="Name" SortProperty="Name">
             <EditTemplate Context="room">
                 <RadzenTextBox @bind-Value="room.room_name" Data="@rooms" TextProperty="room_name" ValueProperty="room_name" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
 
-
-
-
-                
         <RadzenDataGridColumn TItem="Room" Property="roomType" Title="Room Type">
             <EditTemplate Context="room">
-                <RadzenDropDown @bind-Value="room.room_type_key" AllowClear="true" Class="w-100" AllowFiltering="true" Data=@roomTypes TextProperty="NAME" ValueProperty="room.room_type_key" />
+                <RadzenDropDown @bind-Value="room.room_type_key" AllowClear="true" Class="w-100" AllowFiltering="true" Data=@roomTypes TextProperty="roomtype.NAME" ValueProperty="room.room_type_key" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+                
+        <RadzenDataGridColumn TItem="Room" Property="area" Title="Area">
+            <EditTemplate Context="room">
+                <RadzenNumeric ShowUpDown="false"  @bind-Value="room.area" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+                                
+        <RadzenDataGridColumn TItem="Room" Property="population" Title="Population">
+            <EditTemplate Context="room">
+                <RadzenNumeric @bind-Value="room.population" AllowClear="true" Class="w-100" AllowFiltering="true" Data=@rooms TextProperty="room.population" ValueProperty="room.population" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+                
+        <RadzenDataGridColumn TItem="Room" Property="supply_airflow" Title="Supply Air">
+            <EditTemplate Context="room">
+                <RadzenNumeric @bind-Value="room.supply_airflow" AllowClear="true" Class="w-100" AllowFiltering="true" Data=@rooms TextProperty="room.supply_airflow" ValueProperty="room.supply_airflow" />
             </EditTemplate>
         </RadzenDataGridColumn>
 
-
         <RadzenDataGridColumn TItem="Room" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
             <Template Context="room">
-                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(room))" @onclick:stopPropagation="true"></RadzenButton>
-                <RadzenLink Path="Rooms" Text="Go to Rooms page" />                 
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(room))" @onclick:stopPropagation="true"></RadzenButton>            
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(room))"  @onclick:stopPropagation="true"></RadzenButton>
             </Template>
             <EditTemplate Context="room">
@@ -56,6 +68,8 @@
     RadzenDataGrid<Room> roomsGrid;
     IList<Room> rooms;        
     IList<RoomType> roomTypes;
+    string building_name;
+    string site_name;
     Room roomToInsert;
     [Parameter]
     public int building_key { get; set; }
@@ -63,6 +77,9 @@
     protected override async Task OnInitializedAsync()
     {
         rooms = await _roomService.GetBuildingRooms(building_key);
+        roomTypes = await _roomTypeService.GetRoomTypes();
+        building_name = rooms.FirstOrDefault().building_name;
+        site_name = rooms.FirstOrDefault().site_name;
     }
 
     //creates a new blank row in UI grid bound to new object of type room; not sure if this fires the radzen rowcreate method which we have set to call the OnCreateRow method below

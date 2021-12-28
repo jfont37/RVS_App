@@ -46,7 +46,6 @@
         <RadzenDataGridColumn TItem="Site" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="200px">
             <Template Context="site">
                 <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(site))" @onclick:stopPropagation="true"></RadzenButton>
-                @*<RadzenLink Icon="apartment" href="@($"buildings/{site.site_key}")"></RadzenLink>*@
                 <RadzenButton Icon="apartment" ButtonStyle="ButtonStyle.Light" Click="@(args => GoToBuildings(site.site_key))"></RadzenButton>
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(site))"  @onclick:stopPropagation="true"></RadzenButton>           
             </Template>
@@ -146,21 +145,10 @@
             sitesGrid.CancelEditRow(site);
         }
     }
-
-      void GoToBuildings(int site_key)
-  {
-
-    //NavigationManager.NavigateTo("https://ibm.com");
-    NavigationManager.NavigateTo("/Buildings/" + site_key);
-  }
-
-
-    //async Task GoToBuildings(Site site)
-    //{
-    //    var site_key = site.site_key;
-    //    GetBuildings(int site_key)
-
-    //}
-
+     
+    void GoToBuildings(int site_key)      
+    {    
+        NavigationManager.NavigateTo("/Buildings/" + site_key);      
+    }
 
 }
