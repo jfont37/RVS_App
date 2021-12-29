@@ -10,7 +10,7 @@
     <Columns>
         <RadzenDataGridColumn TItem="Site" Property="NAME" Title="NAME">
             <EditTemplate Context="site">
-                <RadzenTextBox @bind-Value="site.NAME" Data="@sites" TextProperty="SiteName" ValueProperty="NAME" Style="width:100%; display: block;" />
+                <RadzenTextBox @bind-Value="site.site_name" Data="@sites" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
 

@@ -13,9 +13,9 @@
 <RadzenDataGrid @ref="sitesGrid" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" EditMode="DataGridEditMode.Single"
                 Data="@sites" TItem="Site" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
     <Columns>
-        <RadzenDataGridColumn TItem="Site" Property="NAME" Title="NAME" SortProperty="NAME">
+        <RadzenDataGridColumn TItem="Site" Property="site_name" Title="NAME" SortProperty="site_name">
             <EditTemplate Context="site">
-                <RadzenTextBox @bind-Value="site.NAME" Data="@sites" TextProperty="SiteName" ValueProperty="NAME" Style="width:100%; display: block;" />
+                <RadzenTextBox @bind-Value="site.site_name" Data="@sites" TextProperty="site_name" ValueProperty="site_name" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
 

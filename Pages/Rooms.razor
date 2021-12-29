@@ -12,25 +12,25 @@
 <RadzenDataGrid @ref="roomsGrid" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" EditMode="DataGridEditMode.Single"
                 Data="@rooms" TItem="Room" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
     <Columns>
-        <RadzenDataGridColumn TItem="Room" Property="room_number" Title="Number" SortProperty="Number">
+        <RadzenDataGridColumn TItem="Room" Property="room_number" Title="Number" SortProperty="room_number">
             <EditTemplate Context="room">
-                <RadzenTextBox @bind-Value="room.room_number" Data="@rooms" TextProperty="room_number" ValueProperty="room_number" Style="width:100%; display: block;" />
+                <RadzenTextBox @bind-Value="room.room_number" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn TItem="Room" Property="room_name" Title="Name" SortProperty="Name">
+        <RadzenDataGridColumn TItem="Room" Property="room_name" Title="Name" SortProperty="room_name">
             <EditTemplate Context="room">
-                <RadzenTextBox @bind-Value="room.room_name" Data="@rooms" TextProperty="room_name" ValueProperty="room_name" Style="width:100%; display: block;" />
+                <RadzenTextBox @bind-Value="room.room_name" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn TItem="Room" Property="roomType" Title="Room Type">
+        <RadzenDataGridColumn TItem="Room" Property="room_type_name" Title="Room Type">
             <EditTemplate Context="room">
-                <RadzenDropDown @bind-Value="room.room_type_key" AllowClear="true" Class="w-100" AllowFiltering="true" Data=@roomTypes TextProperty="roomtype.NAME" ValueProperty="room.room_type_key" />
+                <RadzenDropDown @bind-Value="room.room_type_key" AllowClear="true" AllowFiltering="true" Data=@roomTypes TextProperty="room_type.room_type_name" ValueProperty="room_type.room_type_key" />
             </EditTemplate>
         </RadzenDataGridColumn>
                 
-        <RadzenDataGridColumn TItem="Room" Property="area" Title="Area">
+        <RadzenDataGridColumn TItem="Room" Property="area" Title="Floor Area">
             <EditTemplate Context="room">
                 <RadzenNumeric ShowUpDown="false"  @bind-Value="room.area" />
             </EditTemplate>
@@ -38,15 +38,40 @@
                                 
         <RadzenDataGridColumn TItem="Room" Property="population" Title="Population">
             <EditTemplate Context="room">
-                <RadzenNumeric @bind-Value="room.population" AllowClear="true" Class="w-100" AllowFiltering="true" Data=@rooms TextProperty="room.population" ValueProperty="room.population" />
+                <RadzenNumeric @bind-Value="room.population" />
             </EditTemplate>
         </RadzenDataGridColumn>
                 
-        <RadzenDataGridColumn TItem="Room" Property="supply_airflow" Title="Supply Air">
+        <RadzenDataGridColumn TItem="Room" Property="supply_airflow" Title="Supply Airflow">
             <EditTemplate Context="room">
-                <RadzenNumeric @bind-Value="room.supply_airflow" AllowClear="true" Class="w-100" AllowFiltering="true" Data=@rooms TextProperty="room.supply_airflow" ValueProperty="room.supply_airflow" />
+                <RadzenNumeric @bind-Value="room.supply_airflow" />
             </EditTemplate>
         </RadzenDataGridColumn>
+                
+        <RadzenDataGridColumn TItem="Room" Property="ventilation_efficiency" Title="ventilation_efficiency">
+            <EditTemplate Context="room">
+                <RadzenNumeric @bind-Value="room.ventilation_efficiency" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+                
+        <RadzenDataGridColumn TItem="Room" Property="critical" Title="critical">
+            <EditTemplate Context="room">                        
+                <RadzenSwitch @bind-Value="room.critical" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+                
+        <RadzenDataGridColumn TItem="Room" Property="oa_required" Title="oa_required">
+            <EditTemplate Context="room">
+                <RadzenNumeric @bind-Value="room.oa_required" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+
+
+
+
+
+
+
 
         <RadzenDataGridColumn TItem="Room" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
             <Template Context="room">

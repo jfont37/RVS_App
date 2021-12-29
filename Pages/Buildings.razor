@@ -13,9 +13,9 @@
 <RadzenDataGrid @ref="buildingsGrid" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" EditMode="DataGridEditMode.Single"
                 Data="@buildings" TItem="Building" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
     <Columns>
-        <RadzenDataGridColumn TItem="Building" Property="NAME" Title="NAME" SortProperty="NAME">
+        <RadzenDataGridColumn TItem="Building" Property="building_name" Title="NAME" SortProperty="building_name">
             <EditTemplate Context="building">
-                <RadzenTextBox @bind-Value="building.NAME" Data="@buildings" TextProperty="BuildingName" ValueProperty="NAME" Style="width:100%; display: block;" />
+                <RadzenTextBox @bind-Value="building.building_name" Data="@buildings" TextProperty="building_name" ValueProperty="building_name" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
 
