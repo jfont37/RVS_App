@@ -1,0 +1,130 @@
+﻿@using DataAccessLibrary
+@using DataAccessLibrary.Models
+@inject NavigationManager NavigationManager
+@inject TerminalUnitService _terminalUnitService
+@inject AirHandlerService _airHandlerService
+
+
+    <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Terminal Unit" Click="@InsertRow" Disabled=@(terminalUnitToInsert != null) />
+    <RadzenDataGrid @ref="terminalUnitsGrid" AllowColumnResize="true" EditMode="DataGridEditMode.Multiple" Data="@terminalUnits" TItem="TerminalUnit" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
+        <Columns>
+            <RadzenDataGridColumn TItem="TerminalUnit" Property="terminal_unit_name" Title="Name" Frozen="true" SortProperty="terminal_unit_name">                        
+                <EditTemplate Context="terminalunit">
+                    <RadzenTextBox @bind-Value="terminalunit.terminal_unit_name"/>
+                </EditTemplate>
+            </RadzenDataGridColumn>           
+                        
+        <RadzenDataGridColumn TItem="TerminalUnit" Property="air_handler_name" Title="AHU">
+            <EditTemplate Context="terminalunit">
+                <RadzenDropDown @bind-Value="terminalunit.air_handler_key" AllowClear="true" AllowFiltering="true" Data=@airHandlers TextProperty="air_handler.air_handler_name" ValueProperty="air_handler.air_handler_key" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+            
+            <RadzenDataGridColumn TItem="TerminalUnit" Property="area" Title="Area" Frozen="true" SortProperty="area">                        
+                <EditTemplate Context="terminalunit">
+                    <RadzenNumeric @bind-Value="terminalunit.area"/>
+                </EditTemplate>
+            </RadzenDataGridColumn> 
+                    
+            <RadzenDataGridColumn TItem="TerminalUnit" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+            <Template Context="terminalunit">
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(terminalunit))" @onclick:stopPropagation="true"></RadzenButton>            
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(terminalunit))"  @onclick:stopPropagation="true"></RadzenButton>
+            </Template>
+            <EditTemplate Context="terminalunit">
+                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(terminalunit))">
+                </RadzenButton>
+                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(terminalunit))">
+                </RadzenButton>
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+
+
+@code {
+    RadzenDataGrid<TerminalUnit> terminalUnitsGrid;
+    IList<TerminalUnit> terminalUnits;        
+    IList<AirHandler> airHandlers;
+    string building_name;
+    string site_name;
+    TerminalUnit terminalUnitToInsert;
+    [Parameter]
+    public int Building_key { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        terminalUnits = await _terminalUnitService.GetBuildingTerminalUnits(Building_key);                
+        airHandlers = await _airHandlerService.GetBuildingAirHandlers(Building_key);    
+    }        
+     
+    async Task InsertRow()    
+    {
+        terminalUnitToInsert = new TerminalUnit();
+        await terminalUnitsGrid.InsertRow(terminalUnitToInsert);
+    }
+
+    //somehow this gets fired only when clicking save (checkmark symbol on ui) for a new row. not sure what actually calls this
+    void OnCreateRow(TerminalUnit terminalUnit)
+    {
+        terminalUnit.building_key = Building_key;
+        _terminalUnitService.InsertTerminalUnit(terminalUnit);
+    }
+
+    //fires when save (checkmark symbol on ui) is clicked but now idea how this gets to OnCreateRow as this only calls UpdateRow which calls updateroom
+    async Task SaveRow(TerminalUnit terminalUnit)
+    {
+        if (terminalUnit == terminalUnitToInsert)
+        {
+            terminalUnitToInsert = null;
+        }
+
+        await terminalUnitsGrid.UpdateRow(terminalUnit);
+    }
+
+    async Task EditRow(TerminalUnit terminalUnit)
+    {
+        await terminalUnitsGrid.EditRow(terminalUnit);
+    }
+
+    void OnUpdateRow(TerminalUnit terminalUnit)    
+    {
+        if (terminalUnit == terminalUnitToInsert)
+        {
+            terminalUnitToInsert = null;
+        }
+        _terminalUnitService.UpdateTerminalUnit(terminalUnit);
+    }
+
+    void CancelEdit(TerminalUnit terminalUnit)
+    {
+        if (terminalUnit == terminalUnitToInsert)
+        {
+            terminalUnitToInsert = null;
+        }
+
+        terminalUnitsGrid.CancelEditRow(terminalUnit);
+    }
+
+     async Task DeleteRow(TerminalUnit terminalUnit)
+    {
+        if (terminalUnit == terminalUnitToInsert)
+        {
+            terminalUnitToInsert = null;
+        }
+
+        if (terminalUnits.Contains(terminalUnit))
+        {
+           _terminalUnitService.DeleteTerminalUnit(terminalUnit); 
+
+            await terminalUnitsGrid.Reload();
+        }
+        else
+        {
+            terminalUnitsGrid.CancelEditRow(terminalUnit);
+        }
+    }
+
+
+
+}

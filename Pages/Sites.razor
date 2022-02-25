@@ -20,8 +20,8 @@
         </RadzenDataGridColumn>
 
         <RadzenDataGridColumn TItem="Site" Property="address" Title="ADDRESS">
-            <EditTemplate Context="site">
-            <RadzenTextBox @bind-Value="site.address" Data="@sites" TextProperty="SiteAddress" ValueProperty="Address" Style="width:100%; display: block;" />
+            <EditTemplate Context="site">            
+                <RadzenTextBox @bind-Value="site.address" Data="@sites" TextProperty="SiteAddress" ValueProperty="Address" Style="width:100%; display: block;" />
             </EditTemplate>
         </RadzenDataGridColumn>
 

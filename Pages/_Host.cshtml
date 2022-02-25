@@ -31,8 +31,18 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-
+        
+    <script src="~/js/blazor-modal.js"></script>
     <script src="_framework/blazor.server.js"></script>
-    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>    
+    <script>  
+        window.onUsersnapCXLoad = function(api) {    
+            api.init();  
+        }  
+        var script = document.createElement('script');  
+        script.defer = 1;  
+        script.src = 'https://widget.usersnap.com/global/load/9f104f48-3af9-4e77-a01e-bbdffc271786?onload=onUsersnapCXLoad';  
+        document.getElementsByTagName('head')[0].appendChild(script);
+    </script>
 </body>
 </html>

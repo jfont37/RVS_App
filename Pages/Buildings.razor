@@ -8,7 +8,7 @@
 @inject StateService _stateService
 
 
-<h1>@site_name Buildings</h1>
+<h1>@site_name - Buildings</h1>
 <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Building" Click="@InsertRow" Disabled=@(buildingToInsert != null) />
 <RadzenDataGrid @ref="buildingsGrid" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" EditMode="DataGridEditMode.Single"
                 Data="@buildings" TItem="Building" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
@@ -73,7 +73,10 @@
     {                
         base.OnInitialized();
         buildings = await _buildingService.GetSiteBuildings(site_key);
-        site_name = buildings.FirstOrDefault().site_name;
+        if(buildings.Count > 0)
+        {                    
+            site_name = buildings.FirstOrDefault().site_name;
+        }
         states = await _stateService.GetStates();
     }
 

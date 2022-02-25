@@ -1,0 +1,136 @@
+﻿@using DataAccessLibrary
+@using DataAccessLibrary.Models
+@inject NavigationManager NavigationManager
+@inject AirHandlerService _airHandlerService
+
+
+    <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Air Handler" Click="@InsertRow" Disabled=@(airHandlerToInsert != null) />
+    <RadzenDataGrid @ref="airHandlersGrid" AllowColumnResize="true" EditMode="DataGridEditMode.Multiple" Data="@airHandlers" TItem="AirHandler" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
+        <Columns>
+            <RadzenDataGridColumn TItem="AirHandler" Property="air_handler_name" Title="Name" Frozen="true" SortProperty="air_handler_name">                        
+                <EditTemplate Context="airhandler">
+                    <RadzenTextBox @bind-Value="airhandler.air_handler_name"/>
+                </EditTemplate>
+            </RadzenDataGridColumn>   
+                    
+            <RadzenDataGridColumn TItem="AirHandler" Property="doas" TextAlign="TextAlign.Center" Title="DOAS">                        
+                <Template Context="airhandler">
+                    <RadzenSwitch @bind-Value="airhandler.doas" />
+                </Template>
+                <EditTemplate Context="airhandler">                        
+                    <RadzenSwitch @bind-Value="airhandler.doas" />
+                </EditTemplate>        
+            </RadzenDataGridColumn>
+                        
+            <RadzenDataGridColumn TItem="AirHandler" Property="ventilation_efficiency" Title="Vent Eff" Frozen="true" SortProperty="ventilation_efficiency">                        
+                <EditTemplate Context="airhandler">
+                    <RadzenNumeric @bind-Value="airhandler.ventilation_efficiency"/>
+                </EditTemplate>
+            </RadzenDataGridColumn>
+            
+            <RadzenDataGridColumn TItem="AirHandler" Property="supply_airflow" Title="SAF" Frozen="true" SortProperty="supply_airflow">                        
+                <EditTemplate Context="airhandler">
+                    <RadzenNumeric @bind-Value="airhandler.supply_airflow"/>
+                </EditTemplate>
+            </RadzenDataGridColumn> 
+                    
+            <RadzenDataGridColumn TItem="AirHandler" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+            <Template Context="airhandler">
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(airhandler))" @onclick:stopPropagation="true"></RadzenButton>            
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(airhandler))"  @onclick:stopPropagation="true"></RadzenButton>
+            </Template>
+            <EditTemplate Context="airhandler">
+                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(airhandler))">
+                </RadzenButton>
+                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(airhandler))">
+                </RadzenButton>
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+
+
+@code {
+    RadzenDataGrid<AirHandler> airHandlersGrid;
+    IList<AirHandler> airHandlers;
+    string building_name;
+    string site_name;
+    AirHandler airHandlerToInsert;
+    [Parameter]
+    public int Building_key { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        airHandlers = await _airHandlerService.GetBuildingAirHandlers(Building_key);
+    }        
+     
+    async Task InsertRow()    
+    {
+        airHandlerToInsert = new AirHandler();
+        await airHandlersGrid.InsertRow(airHandlerToInsert);
+    }
+
+    //somehow this gets fired only when clicking save (checkmark symbol on ui) for a new row. not sure what actually calls this
+    void OnCreateRow(AirHandler airHandler)
+    {
+        airHandler.building_key = Building_key;
+        _airHandlerService.InsertAirHandler(airHandler);
+    }
+
+    //fires when save (checkmark symbol on ui) is clicked but now idea how this gets to OnCreateRow as this only calls UpdateRow which calls updateroom
+    async Task SaveRow(AirHandler airHandler)
+    {
+        if (airHandler == airHandlerToInsert)
+        {
+            airHandlerToInsert = null;
+        }
+
+        await airHandlersGrid.UpdateRow(airHandler);
+    }
+
+    async Task EditRow(AirHandler airHandler)
+    {
+        await airHandlersGrid.EditRow(airHandler);
+    }
+
+    void OnUpdateRow(AirHandler airHandler)    
+    {
+        if (airHandler == airHandlerToInsert)
+        {
+            airHandlerToInsert = null;
+        }
+        _airHandlerService.UpdateAirHandler(airHandler);
+    }
+
+    void CancelEdit(AirHandler airHandler)
+    {
+        if (airHandler == airHandlerToInsert)
+        {
+            airHandlerToInsert = null;
+        }
+
+        airHandlersGrid.CancelEditRow(airHandler);
+    }
+
+     async Task DeleteRow(AirHandler airHandler)
+    {
+        if (airHandler == airHandlerToInsert)
+        {
+            airHandlerToInsert = null;
+        }
+
+        if (airHandlers.Contains(airHandler))
+        {
+           _airHandlerService.DeleteAirHandler(airHandler); 
+
+            await airHandlersGrid.Reload();
+        }
+        else
+        {
+            airHandlersGrid.CancelEditRow(airHandler);
+        }
+    }
+
+
+
+}
