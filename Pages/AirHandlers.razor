@@ -1,10 +1,15 @@
-﻿@using DataAccessLibrary
+﻿@page "/AirHandlers"
+@page "/AirHandlers/{building_key:int}"
+@using DataAccessLibrary
 @using DataAccessLibrary.Models
 @inject NavigationManager NavigationManager
 @inject AirHandlerService _airHandlerService
+@inject TerminalUnitService _terminalUnitService
 
+<h1>@site_name - @building_name - Air Handlers</h1>
 
-    <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Air Handler" Click="@InsertRow" Disabled=@(airHandlerToInsert != null) />
+<RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Air Handler" Click="@InsertRow" Disabled=@(airHandlerToInsert != null) />
+
     <RadzenDataGrid @ref="airHandlersGrid" AllowColumnResize="true" EditMode="DataGridEditMode.Multiple" Data="@airHandlers" TItem="AirHandler" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
         <Columns>
             <RadzenDataGridColumn TItem="AirHandler" Property="air_handler_name" Title="Name" Frozen="true" SortProperty="air_handler_name">                        
@@ -67,7 +72,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        airHandlers = await _airHandlerService.GetBuildingAirHandlers(Building_key);
+        airHandlers = await _airHandlerService.GetBuildingAirHandlers(Building_key);                    
+        building_name = airHandlers.FirstOrDefault().building_name;
+        site_name = airHandlers.FirstOrDefault().site_name;
     }        
      
     async Task InsertRow()    
@@ -127,7 +134,7 @@
 
         if (airHandlers.Contains(airHandler))
         {
-           _airHandlerService.DeleteAirHandler(airHandler); 
+          _airHandlerService.DeleteAirHandler(airHandler); 
 
             await airHandlersGrid.Reload();
         }

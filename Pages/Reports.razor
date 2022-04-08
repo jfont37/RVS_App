@@ -1,0 +1,53 @@
+﻿@page "/Reports"
+@using DataAccessLibrary
+@using DataAccessLibrary.Models
+@inject NavigationManager NavigationManager
+@inject SiteService _siteService
+@inject ReportService _reportService
+
+<h1>RVS Report</h1>
+                
+<RadzenDropDown Data=@sites TValue="int" AllowClear="true" AllowFiltering="true" Change=@(args => RunReport(args)) TextProperty="site.site_name" ValueProperty="site.site_key" />
+
+<RadzenDataGrid @ref="reportRowGrid" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" Data="@reportRows" TItem="ReportRow" >
+    <Columns>
+        <RadzenDataGridColumn TItem="ReportRow" Property="building_name" Title="Building" SortProperty="building_name"></RadzenDataGridColumn>                
+        <RadzenDataGridColumn TItem="ReportRow" Property="terminal_unit_name" Title="TU" SortProperty="terminal_unit_name"></RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ReportRow" Property="area" Title="Area" SortProperty="area"></RadzenDataGridColumn>                        
+        <RadzenDataGridColumn TItem="ReportRow" Property="air_handler_name" Title="AHU" SortProperty="air_handler_name"></RadzenDataGridColumn>                                
+        <RadzenDataGridColumn TItem="ReportRow" Property="oa_required" Title="OA reqd" SortProperty="oa_required"></RadzenDataGridColumn>                                        
+        <RadzenDataGridColumn TItem="ReportRow" Property="cooling_max" Title="Clg Max" SortProperty="cooling_max"></RadzenDataGridColumn>                                                
+        <RadzenDataGridColumn TItem="ReportRow" Property="cooling_min" Title="Clg Min" SortProperty="cooling_min"></RadzenDataGridColumn>                                                        
+        <RadzenDataGridColumn TItem="ReportRow" Property="heating_max" Title="Htg Max" SortProperty="heating_max"></RadzenDataGridColumn>                                                                
+        <RadzenDataGridColumn TItem="ReportRow" Property="heating_min" Title="Htg Min" SortProperty="heating_min"></RadzenDataGridColumn>                
+        <RadzenDataGridColumn TItem="ReportRow" Property="cooling_max_unocc" Title="Clg Max U" SortProperty="cooling_max_unocc"></RadzenDataGridColumn>                                                
+        <RadzenDataGridColumn TItem="ReportRow" Property="cooling_min_unocc" Title="Clg Min U" SortProperty="cooling_min_unocc"></RadzenDataGridColumn>                                                        
+        <RadzenDataGridColumn TItem="ReportRow" Property="heating_max_unocc" Title="Htg Max U" SortProperty="heating_max_unocc"></RadzenDataGridColumn>                                                                
+        <RadzenDataGridColumn TItem="ReportRow" Property="heating_min_unocc" Title="Htg Min U" SortProperty="heating_min_unocc"></RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    RadzenDataGrid<ReportRow> reportRowGrid;
+    IList<ReportRow> reportRows;
+    IList<Site> sites;
+    string site_name;
+
+    protected override async Task OnInitializedAsync()
+    {                
+        base.OnInitialized();
+        sites = await _siteService.GetSites();
+    }
+
+    async Task RunReport(object site)
+    {
+        var site_key = (int)site;
+        reportRows = await _reportService.GetReportRows(site_key);
+        if(reportRows.Count > 0)
+        {                    
+            site_name = reportRows.FirstOrDefault().site_name;
+        }
+
+    }
+
+}

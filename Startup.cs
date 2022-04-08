@@ -35,6 +35,7 @@ namespace RVS_App
             services.AddTransient<RoomTypeService>();
             services.AddTransient<AirHandlerService>();
             services.AddTransient<TerminalUnitService>();
+            services.AddTransient<ReportService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
