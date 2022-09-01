@@ -30,10 +30,35 @@
     <TerminalUnitGrid Building_key="@building_key"></TerminalUnitGrid>
 </Modal>
 
+<Modal @bind-Open="IsModalOpened3">
+
+    <form method="dialog">
+        <menu>
+            <button value="cancel">Close</button>
+        </menu>
+    </form> 
+
+    @*<RadzenTextBox Change=@(args => ImportRooms(args)) Class="w-100" />      *@
+    <input type="text" @bind="@filePath" @oninput="@((e) => { filePath=(string)e.Value;})" />
+    <RadzenButton  style="margin-bottom: 10px" Text="Import" Click="@(args => ImportRooms())"/>
+
+@*    <EditForm Model="@file" OnValidSubmit="@ImportRooms">
+        <InputText id="name" @bind-Value="file.name" />
+        <button type="submit">Import</button>
+    </EditForm>
+*@
+</Modal>
+
 
 <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Room" Click="@InsertRow" Disabled=@(roomToInsert != null) />
 <RadzenButton  style="margin-bottom: 10px" Text="Air Handlers" Click="e => IsModalOpened = true"/>
-<RadzenButton  style="margin-bottom: 10px" Text="Terminal Units" Click="e => IsModalOpened2 = true"/>
+<RadzenButton  style="margin-bottom: 10px" Text="Terminal Units" Click="e => IsModalOpened2 = true"/>         
+<RadzenButton  style="margin-bottom: 10px" Text="Import From Excel" Click="e => IsModalOpened3 = true"/>
+             
+@*<RadzenUpload Url="upload/single" Progress=@(args => OnProgress(args, "Single file upload")) class="w-100"></RadzenUpload>*@
+@*<RadzenFileInput TValue="string" Class="w-100" Click="@ImportRooms" />*@
+@*<RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="import" Click="@ImportRooms" />*@
+
 
 <RadzenDataGrid @ref="roomsGrid" AllowFiltering="true" AllowColumnResize="true" Width="500px" EditMode="DataGridEditMode.Multiple" Data="@rooms" TItem="Room" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
     
@@ -172,6 +197,7 @@
     Room roomToInsert;
     [Parameter]
     public int building_key { get; set; }
+    private string filePath {get;set;} 
 
     protected override async Task OnInitializedAsync()
     {
@@ -235,7 +261,7 @@
         roomsGrid.CancelEditRow(room);
     }
 
-     async Task DeleteRow(Room room)
+    async Task DeleteRow(Room room)
     {
         if (room == roomToInsert)
         {
@@ -244,7 +270,7 @@
 
         if (rooms.Contains(room))
         {
-           _roomService.DeleteRoom(room); 
+            _roomService.DeleteRoom(room); 
 
             await roomsGrid.Reload();
         }
@@ -253,8 +279,44 @@
             roomsGrid.CancelEditRow(room);
         }
     }
-    
+
     public bool IsModalOpened { get; set; }        
-    public bool IsModalOpened2 { get; set; }
-    
+    public bool IsModalOpened2 { get; set; }        
+    public bool IsModalOpened3 { get; set; }
+
+    async Task ImportRooms()
+    {
+        //need to get file selector to allow user to select file name to use and delete the following line
+        //var file = new String(@"C:\Users\jfontenot\OneDrive - Bernhard, LLC\Desktop\testRVSimport.xlsm"); 
+        
+        await _roomService.ImportRoomsFromExcel(filePath, building_key);
+    }
+
+
+
+    //async Task ImportRooms(string value)
+    //{
+    //    //need to get file selector to allow user to select file name to use and delete the following line
+    //    //var file = new String(@"C:\Users\jfontenot\OneDrive - Bernhard, LLC\Desktop\testRVSimport.xlsm"); 
+    //    var fileName = value;
+    //    await _roomService.ImportRoomsFromExcel(fileName, building_key);
+    //}
+
+    //void OnProgress(UploadProgressArgs args, string name)
+    //{
+    //    foreach (var file in args.Files)
+    //    {            
+    //        var fileName = file.Name;
+    //        _roomService.ImportRoomsFromExcel(fileName, building_key);
+    //    }
+    //}
+
+    //void OnChange(UploadChangeEventArgs args, string name)
+    //{
+    //    foreach (var file in args.Files)
+    //    {
+    //        _roomService.ImportRoomsFromExcel(name, building_key);
+    //    }
+    //}
+   
 }

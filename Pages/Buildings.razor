@@ -48,7 +48,7 @@
                 <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(building))" @onclick:stopPropagation="true"></RadzenButton>
                 <RadzenButton Icon="meeting_room" ButtonStyle="ButtonStyle.Light" Click="@(args => GoToRooms(building.building_key))"></RadzenButton>                                
                 <RadzenButton Icon="washing-machine" ButtonStyle="ButtonStyle.Light" Click="@(args => GoToAirHandlers(building.building_key))"></RadzenButton>                                
-                <RadzenButton Icon="washing-machine" ButtonStyle="ButtonStyle.Light" Click="@(args => GoToTerminalUnits(building.building_key))"></RadzenButton>
+@*                <RadzenButton Icon="washing-machine" ButtonStyle="ButtonStyle.Light" Click="@(args => GoToTerminalUnits(building.building_key))"></RadzenButton>*@
                  <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(building))"  @onclick:stopPropagation="true"></RadzenButton>
             </Template>
             <EditTemplate Context="building">
