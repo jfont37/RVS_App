@@ -37,11 +37,11 @@ namespace RVS_App
                             ,sum(r.supply_airflow) as Heating_Max_Unocc
                             ,round(sum((((r.population * rt.oa_rate_people) + (r.area * rt.oa_rate_area))/r.ventilation_efficiency))/(1+ah.oa_fraction-ah.ventilation_efficiency)) as Heating_Min_Unocc
                         FROM site s
-                            left join building b on b.site_key = s.site_key
-                            left join room r on r.building_key = b.building_key
-                            left join room_type rt on rt.room_type_key = r.room_type_key
-                            left join air_handler ah on r.air_handler_key = ah.air_handler_key
-                            left join terminal_unit tu on tu.terminal_unit_key = r.terminal_unit_key
+                            left join building b on b.site_key = s.site_key                     
+                            left join air_handler ah on ah.building_key = b.building_key
+                            left join terminal_unit tu on tu.air_handler_key = ah.air_handler_key
+							left join room r on r.terminal_unit_key = tu.terminal_unit_key
+							left join room_type rt on rt.room_type_key = r.room_type_key
                         WHERE s.site_key = " + site_key + @"
                         GROUP BY s.site_name, b.building_name,ah.air_handler_name,ah.oa_fraction, ah.ventilation_efficiency,tu.terminal_unit_key                        
                         ORDER BY b.building_name asc, ah.air_handler_name ,tu.terminal_unit_name;

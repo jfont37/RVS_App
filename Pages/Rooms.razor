@@ -48,7 +48,6 @@
 *@
 </Modal>
 
-
 <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Room" Click="@InsertRow" Disabled=@(roomToInsert != null) />
 <RadzenButton  style="margin-bottom: 10px" Text="Air Handlers" Click="e => IsModalOpened = true"/>
 <RadzenButton  style="margin-bottom: 10px" Text="Terminal Units" Click="e => IsModalOpened2 = true"/>         
@@ -74,11 +73,11 @@
             </EditTemplate>
         </RadzenDataGridColumn>
                 
-        <RadzenDataGridColumn TItem="Room" Property="air_handler_name" Title="AHU">
+@*        <RadzenDataGridColumn TItem="Room" Property="air_handler_name" Title="AHU">
             <EditTemplate Context="room">
                 <RadzenDropDown @bind-Value="room.air_handler_key" AllowClear="true" AllowFiltering="true" Data=@airHandlers TextProperty="air_handler.air_handler_name" ValueProperty="air_handler.air_handler_key" />
             </EditTemplate>
-        </RadzenDataGridColumn>
+        </RadzenDataGridColumn>*@
                 
         <RadzenDataGridColumn TItem="Room" Property="terminal_unit_name" Title="TU">
             <EditTemplate Context="room">
@@ -86,16 +85,16 @@
             </EditTemplate>
         </RadzenDataGridColumn>
 
-        <RadzenDataGridColumn Width="150px" TItem="Room" Property="room_type_name" Title="Type">
+        <RadzenDataGridColumn Width="300px" TItem="Room" Property="room_type_name" Title="Type">
             <EditTemplate Context="room">                            
-                <RadzenDropDownDataGrid TValue="int?" @bind-Value="room.room_type_key" Data=@roomTypes Style="width:100%" TextProperty="room_type_name" ValueProperty="room_type_key" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true">                
-                                    <Columns>                    
-                                        <RadzenDropDownDataGridColumn Property="room_type_category_name"    Title="Category" Width="175px" />                    
-                                        <RadzenDropDownDataGridColumn Property="room_type_name"             Title="Type" Width="200px" />                                                                                
-                                        <RadzenDropDownDataGridColumn Property="oa_rate_people"             Title="OA ppl" Width="75px" />                    
-                                        <RadzenDropDownDataGridColumn Property="oa_rate_area"               Title="OA Area" Width="75px" />
-                                        <RadzenDropDownDataGridColumn Property="default_occupancy_density"  Title="Pop. Density" Width="75px" />  
-                                    </Columns>
+                <RadzenDropDownDataGrid TValue="int?" @bind-Value="room.room_type_key" Data=@roomTypes Style="width:100%" TextProperty="room_type_name" ValueProperty="room_type_key" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true">                     
+                    <Columns>                             
+                        <RadzenDropDownDataGridColumn Property="room_type_category_name"    Title="Category" Width="175px" />                    
+                        <RadzenDropDownDataGridColumn Property="room_type_name"             Title="Type" Width="200px" />                                                                                
+                        <RadzenDropDownDataGridColumn Property="oa_rate_people"             Title="OA ppl" Width="75px" />                  
+                        <RadzenDropDownDataGridColumn Property="oa_rate_area"               Title="OA Area" Width="75px" />                                        
+                        <RadzenDropDownDataGridColumn Property="default_occupancy_density"  Title="Pop. Density" Width="75px" />                                      
+                    </Columns>                
                 </RadzenDropDownDataGrid>              
             </EditTemplate>
         </RadzenDataGridColumn>

@@ -9,8 +9,6 @@
 
 <h1>@site_name - @building_name - Terminal Units</h1>
 
-<RadzenDropDown Data=@sites TValue="int" AllowClear="true" AllowFiltering="true" @*Change=@(args => RunReport(args))*@ TextProperty="site.site_name" ValueProperty="site.site_key" />
-
 <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Terminal Unit" Click="@InsertRow" Disabled=@(terminalUnitToInsert != null) />
     
 <RadzenDataGrid @ref="terminalUnitsGrid" AllowColumnResize="true" EditMode="DataGridEditMode.Multiple" Data="@terminalUnits" TItem="TerminalUnit" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">        

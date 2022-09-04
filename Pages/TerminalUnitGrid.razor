@@ -3,33 +3,29 @@
 @inject NavigationManager NavigationManager
 @inject TerminalUnitService _terminalUnitService
 @inject AirHandlerService _airHandlerService
+    
+<RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Terminal Unit" Click="@InsertRow" Disabled=@(terminalUnitToInsert != null) />    
+<RadzenDataGrid @ref="terminalUnitsGrid" AllowColumnResize="true" EditMode="DataGridEditMode.Multiple" Data="@terminalUnits" TItem="TerminalUnit" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">        
+    <Columns>            
+        <RadzenDataGridColumn TItem="TerminalUnit" Property="terminal_unit_name" Title="Name" Frozen="true" SortProperty="terminal_unit_name">             
+            <EditTemplate Context="terminalunit">                    
+                <RadzenTextBox @bind-Value="terminalunit.terminal_unit_name"/>                
+            </EditTemplate>            
+        </RadzenDataGridColumn>
 
-
-    <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Terminal Unit" Click="@InsertRow" Disabled=@(terminalUnitToInsert != null) />
-    <RadzenDataGrid @ref="terminalUnitsGrid" AllowColumnResize="true" EditMode="DataGridEditMode.Multiple" Data="@terminalUnits" TItem="TerminalUnit" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
-        <Columns>
-            <RadzenDataGridColumn TItem="TerminalUnit" Property="terminal_unit_name" Title="Name" Frozen="true" SortProperty="terminal_unit_name">                        
-                <EditTemplate Context="terminalunit">
-                    <RadzenTextBox @bind-Value="terminalunit.terminal_unit_name"/>
-                </EditTemplate>
-            </RadzenDataGridColumn>           
-                        
         <RadzenDataGridColumn TItem="TerminalUnit" Property="air_handler_name" Title="AHU">
             <EditTemplate Context="terminal_unit">
                 <RadzenDropDown @bind-Value="terminal_unit.air_handler_key" AllowClear="true" AllowFiltering="true" Data=@airHandlers TextProperty="air_handler.air_handler_name" ValueProperty="air_handler.air_handler_key" />
             </EditTemplate>
-        </RadzenDataGridColumn>
-
-   
-
+        </RadzenDataGridColumn>         
             
-            <RadzenDataGridColumn TItem="TerminalUnit" Property="area" Title="Area" Frozen="true" SortProperty="area">                        
-                <EditTemplate Context="terminalunit">
-                    <RadzenNumeric @bind-Value="terminalunit.area"/>
-                </EditTemplate>
-            </RadzenDataGridColumn> 
-                    
-            <RadzenDataGridColumn TItem="TerminalUnit" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+        <RadzenDataGridColumn TItem="TerminalUnit" Property="area" Title="Area" Frozen="true" SortProperty="area">                     
+            <EditTemplate Context="terminalunit">                    
+                <RadzenNumeric @bind-Value="terminalunit.area"/>                
+            </EditTemplate>            
+        </RadzenDataGridColumn>                    
+            
+        <RadzenDataGridColumn TItem="TerminalUnit" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">            
             <Template Context="terminalunit">
                 <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(terminalunit))" @onclick:stopPropagation="true"></RadzenButton>            
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(terminalunit))"  @onclick:stopPropagation="true"></RadzenButton>
@@ -40,10 +36,9 @@
                 <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(terminalunit))">
                 </RadzenButton>
             </EditTemplate>
-        </RadzenDataGridColumn>
-        </Columns>
-    </RadzenDataGrid>
-
+        </RadzenDataGridColumn>        
+    </Columns>    
+</RadzenDataGrid>
 
 @code {
     RadzenDataGrid<TerminalUnit> terminalUnitsGrid;
