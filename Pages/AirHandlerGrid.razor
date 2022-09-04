@@ -1,7 +1,6 @@
-﻿@using DataAccessLibrary
-@using DataAccessLibrary.Models
+﻿@using RVS_App.Models
 @inject NavigationManager NavigationManager
-@inject AirHandlerService _airHandlerService
+@inject RVS_App.AirHandlerService _airHandlerService
 
 
     <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="New Air Handler" Click="@InsertRow" Disabled=@(airHandlerToInsert != null) />
